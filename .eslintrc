@@ -15,7 +15,6 @@
         "tabWidth": 2
       }
     ],
-    "indent": ["error", 2],
     "no-console": "off",
     "no-unused-vars": "warn",
     "arrow-parens": ["error", "as-needed"],
