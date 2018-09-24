@@ -1,9 +1,4 @@
-// TODO: documentação
-
 export default app => {
-  // TODO: documentação
-  // Consulta a configuração de uma câmera
-  // Retorna: ConfiguracaoApi
   app.get('/cameras/:idCamera/configuracao', (req, res) => {
     const { idCamera } = req.params;
 
@@ -11,10 +6,6 @@ export default app => {
     res.status(200).send(`GET configuração camera ${idCamera}`);
   });
 
-  // TODO: documentação
-  // Atualiza a configuração de uma câmera
-  // Recebe: ConfiguracaoApi
-  // Retorna: ConfiguracaoApi
   app.put('/cameras/:idCamera/configuracao', (req, res) => {
     const { idCamera } = req.params;
     const { body } = req;
@@ -24,8 +15,6 @@ export default app => {
     res.status(200).send({ idCamera, ...body });
   });
 
-  // TODO: documentação
-  // Envia uma solicitação de foto para confirmação do ajuste do ângulo
   app.post('/cameras/:idCamera/configuracao/confirmacao', (req, res) => {
     const { idCamera } = req.params;
 
@@ -35,9 +24,6 @@ export default app => {
     res.status(200).send(`Websocket ${idCamera}`);
   });
 
-  // TODO: documentação
-  // Envia a foto de confirmação do ajuste do ângulo
-  // Recebe: FotoApi
   app.post('/cameras/:idCamera/configuracao/confirmacao/foto', (req, res) => {
     const { idCamera } = req.params;
 
@@ -46,9 +32,6 @@ export default app => {
     res.status(200).send(`Websocket ${idCamera}`);
   });
 
-  // TODO: documentação
-  // Consulta as novas fotos de uma câmera
-  // Retorna: [FotoApi]
   app.get('/cameras/:idCamera/fotos', (req, res) => {
     const { idCamera } = req.params;
 
@@ -56,9 +39,6 @@ export default app => {
     res.status(200).send(`GET fotos camera ${idCamera}`);
   });
 
-  // TODO: documentação
-  // Insere uma novo foto para uma câmera
-  // Recebe: FotoApi
   app.post('/cameras/:idCamera/fotos', (req, res) => {
     const { idCamera } = req.params;
     const { body } = req;
@@ -67,8 +47,6 @@ export default app => {
     res.status(200).send({ idCamera, ...body });
   });
 
-  // TODO: documentação
-  // Descarta uma foto de uma câmera
   app.delete('/cameras/:idCamera/fotos/:idFoto', (req, res) => {
     const { idCamera, idFoto } = req.params;
 

@@ -11,3 +11,7 @@ Para instalar as dependências do projeto, abra um terminal na pasta raíz do pr
 ## Execução
 
 Para executar o servidor, basta executar o comando `npm start`.
+
+## Documentação
+
+Ao inicializar o servidor, uma URL para a documentação da API (`swagger`) será disponibilizada.
