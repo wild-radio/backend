@@ -46,8 +46,10 @@ const formatMethod = method => {
 export const clear = () => process.stdout.write(clearScreen);
 export const info = message =>
   console.log(`${font.yellow}${date.format(new Date())} |${reset} ${message}`);
+export const error = message =>
+  console.log(`${font.yellow}${date.format(new Date())} |${font.red} ${message}`);
 export const middleware = (req, res, next) => {
   info(`${formatMethod(req.method)}${reset} http://${req.hostname}:${PORT}${req.path}`);
   next();
 };
-export default { clear, info, middleware };
+export default { clear, info, error, middleware };

@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
+import db from './database/db';
 import cors from './utils/cors';
 import routes from './routes/routes';
 import log from './utils/log';
@@ -23,4 +24,5 @@ routes(server);
 server.listen(PORT, () => {
   log.info(`Servidor inicializado em http://${URL}`);
   log.info(`Documentação disponível em http://${URL}${SWAGGER_UI}`);
+  db.test();
 });
