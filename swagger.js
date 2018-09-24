@@ -519,6 +519,34 @@ export default {
           },
         },
       },
+      post: {
+        tags: ['sistemas'],
+        summary: 'Insere um novo sistema',
+        operationId: 'insereSistema',
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            description: 'Sistema',
+            required: true,
+            schema: { $ref: '#/definitions/SistemaApi' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Inserção bem sucedida',
+            schema: { $ref: '#/definitions/SistemaApi' },
+          },
+          400: {
+            description: 'Número serial inválido',
+          },
+          500: {
+            description: 'Erro interno',
+          },
+        },
+      },
     },
   },
   definitions: {
@@ -597,6 +625,9 @@ export default {
         identificacao: {
           type: 'string',
         },
+        numeroSerie: {
+          type: 'string',
+        },
         cameras: {
           type: 'array',
           items: { $ref: '#/definitions/CameraApi' },
@@ -615,10 +646,6 @@ export default {
           format: 'int64',
         },
         principal: {
-          type: 'integer',
-          format: 'int64',
-        },
-        ligada: {
           type: 'integer',
           format: 'int64',
         },
