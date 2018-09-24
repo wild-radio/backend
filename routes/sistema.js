@@ -1,6 +1,5 @@
+import * as impl from './impl/sistemaImpl';
+
 export default app => {
-  app.get('/sistemas', (req, res) => {
-    // TODO: implementação
-    res.status(200).send(`GET sistemas`);
-  });
+  app.get('/sistemas', impl.getSistemas);
 };
