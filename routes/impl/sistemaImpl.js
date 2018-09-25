@@ -21,6 +21,7 @@ export const postSistemas = async (req, res) => {
 
   if (!identificacao || !numeroSerie) {
     res.status(400).send('Campos obrigatórios devem ser preenchidos');
+    return;
   }
 
   const numeroSerieUtilizado = await db.getSingleColumn(
@@ -31,6 +32,7 @@ export const postSistemas = async (req, res) => {
 
   if (numeroSerieUtilizado) {
     res.status(400).send(`O sistema com número de série ${numeroSerie} já foi cadastrado`);
+    return;
   }
 
   await db.execute(
