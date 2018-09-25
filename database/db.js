@@ -17,6 +17,19 @@ export const test = () =>
     }
   });
 
+export const getSingleColumn = query =>
+  new Promise(resolve => {
+    const connection = connect();
+    connection.get(query, (err, row) => {
+      if (err) {
+        log.error(`Erro na consulta ao banco de dados. ${err}`);
+      } else {
+        resolve(Object.values(row)[0]);
+      }
+      connection.close();
+    });
+  });
+
 export const getFirstResult = query =>
   new Promise(resolve => {
     const connection = connect();
@@ -66,4 +79,4 @@ export const execute = query =>
     });
   });
 
-export default { connect, test, getFirstResult, getResultList, execute };
+export default { connect, test, getSingleColumn, getFirstResult, getResultList, execute };
