@@ -23,13 +23,23 @@ export const postSistemas = async (req, res) => {
     res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
+  const numeroSerieUtilizado = await db.getSingleColumn(
+    `select count(*) from Sistema where numeroSerie = '${numeroSerie}'`,
+  );
+
+  console.log(numeroSerieUtilizado);
+
+  if (numeroSerieUtilizado) {
+    res.status(400).send(`O sistema com número de série ${numeroSerie} já foi cadastrado`);
+  }
+
   await db.execute(
     `insert into Sistema
     (identificacao, numeroSerie)
     values
     ('${identificacao}', '${numeroSerie}')`,
   );
-  const sistemaCadastrado = await db.getFirstResult('select id from Sistema order by id desc');
+  const sistemaCadastrado = await db.getFirstResult('select * from Sistema order by id desc');
 
   await db.execute(`insert into Camera (idSistema, principal) values (${sistemaCadastrado.id}, 0)`);
   await db.execute(`insert into Camera (idSistema, principal) values (${sistemaCadastrado.id}, 1)`);
