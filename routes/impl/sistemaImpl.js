@@ -33,7 +33,7 @@ export const postSistemas = async (req, res) => {
 
   await transaction.execute(
     `insert into Sistema (identificacao, numeroSerie)
-       values ('${identificacao}', '${numeroSerie}')`,
+    values ('${identificacao}', '${numeroSerie}')`,
   );
 
   const sistemaCadastrado = await transaction.getFirstResult(
@@ -42,12 +42,35 @@ export const postSistemas = async (req, res) => {
 
   await transaction.execute(
     `insert into Camera (idSistema, principal)
-       values (${sistemaCadastrado.id}, 0)`,
+    values (${sistemaCadastrado.id}, 1)`,
+  );
+
+  const idCameraPrincipal = await transaction.getSingleColumn(
+    'select id from Camera order by id desc',
   );
 
   await transaction.execute(
-    `insert into Camera (idSistema, principal)
-       values (${sistemaCadastrado.id}, 1)`,
+    `insert into Configuracao
+    (idCamera, ativa, temporizador, presenca, horizontal, vertical)
+    values (${idCameraPrincipal}, 0, 0, 0, 0, 0);
+    `,
+  );
+
+  await transaction.execute(
+    `insert into Camera
+    (idSistema, principal)
+    values (${sistemaCadastrado.id}, 0)`,
+  );
+
+  const idCameraAlternativa = await transaction.getSingleColumn(
+    'select id from Camera order by id desc',
+  );
+
+  await transaction.execute(
+    `insert into Configuracao
+    (idCamera, ativa, temporizador, presenca, horizontal, vertical)
+    values (${idCameraAlternativa}, 0, 0, 0, 0, 0);
+    `,
   );
 
   const camerasCadastradas = await transaction.getResultList(
