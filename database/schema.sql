@@ -4,6 +4,7 @@ CREATE TABLE Sistema (
     numeroSerie TEXT NOT NULL
 );
 CREATE UNIQUE INDEX index_sistema ON Sistema(id);
+CREATE UNIQUE INDEX index_sistema_numeroSerie ON Sistema(numeroSerie);
 
 CREATE TABLE Camera (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,19 +35,19 @@ CREATE UNIQUE INDEX index_catalogo ON Catalogo(id);
 CREATE TABLE Foto (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
     idCamera INTEGER NOT NULL,
-    idCatalogo INTEGER NOT NULL,
+    idCatalogo INTEGER,
     dataHoraCaptura INTEGER NOT NULL,
-    conteudo BLOB,
+    conteudo BLOB NOT NULL,
     FOREIGN KEY(idCamera) REFERENCES Camera(id),
     FOREIGN KEY(idCatalogo) REFERENCES Catalogo(id)
     		ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE UNIQUE INDEX index_foto ON Foto(id);
 
-INSERT INTO Sistema (id, identificacao, numeroSerie) VALUES(1, 'Sistema 1', 'WR0001');
+INSERT INTO Sistema (id, identificacao, numeroSerie) VALUES (1, 'Sistema 1', 'WR0001');
 
-INSERT INTO Camera (id, idSistema, principal) VALUES(1, 1, 1);
-INSERT INTO Camera (id, idSistema, principal) VALUES(2, 1, 0);
+INSERT INTO Camera (id, idSistema, principal) VALUES (1, 1, 1);
+INSERT INTO Camera (id, idSistema, principal) VALUES (2, 1, 0);
 
 INSERT INTO Configuracao (id, idCamera, ativa, temporizador, presenca, horizontal, vertical) VALUES (1, 1, 0, 0, 0, 0, 0);
 INSERT INTO Configuracao (id, idCamera, ativa, temporizador, presenca, horizontal, vertical) VALUES (2, 2, 0, 0, 0, 0, 0);
