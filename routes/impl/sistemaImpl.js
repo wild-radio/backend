@@ -28,8 +28,6 @@ export const postSistemas = async (req, res) => {
     `select count(*) from Sistema where numeroSerie = '${numeroSerie}'`,
   );
 
-  console.log(numeroSerieUtilizado);
-
   if (numeroSerieUtilizado) {
     res.status(400).send(`O sistema com número de série ${numeroSerie} já foi cadastrado`);
     return;
