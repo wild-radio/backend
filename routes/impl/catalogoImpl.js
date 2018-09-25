@@ -3,7 +3,7 @@ import { transaction } from '../../database/db';
 export const getCatalogos = async (req, res) => {
   const catalogos = await transaction.getResultList('select * from Catalogo');
 
-  res.status(200).send(catalogos);
+  return res.status(200).send(catalogos);
 };
 
 export const postCatalogos = async (req, res) => {
@@ -17,7 +17,7 @@ export const postCatalogos = async (req, res) => {
   await transaction.execute(`insert into Catalogo (nome) values ('${nome}')`);
   const cadastrado = await transaction.getFirstResult('select * from Catalogo order by id desc');
 
-  res.status(200).send(cadastrado);
+  return res.status(200).send(cadastrado);
 };
 
 export const putCatalogos = async (req, res) => {
@@ -39,7 +39,7 @@ export const putCatalogos = async (req, res) => {
 
   await transaction.execute(`update Catalogo set nome = '${nome}' where id = ${idCatalogo}`);
 
-  res.status(200).send({ ...catalogo, nome });
+  return res.status(200).send({ ...catalogo, nome });
 };
 
 export const deleteCatalogos = async (req, res) => {
@@ -55,7 +55,7 @@ export const deleteCatalogos = async (req, res) => {
 
   await transaction.execute(`delete from Catalogo where id = ${idCatalogo}`);
 
-  res.status(200).send();
+  return res.status(200).send();
 };
 
 export const getFotos = async (req, res) => {
@@ -73,7 +73,7 @@ export const getFotos = async (req, res) => {
     `select * from Foto where idCatalogo = ${idCatalogo}`,
   );
 
-  res.status(200).send(fotos);
+  return res.status(200).send(fotos);
 };
 
 export const putFotos = async (req, res) => {
@@ -95,7 +95,7 @@ export const putFotos = async (req, res) => {
 
   await transaction.execute(`update Foto set idCatalogo = ${idCatalogo} where id = ${idFoto}`);
 
-  res.status(200).send();
+  return res.status(200).send();
 };
 
 export const deleteFotos = async (req, res) => {
@@ -119,7 +119,7 @@ export const deleteFotos = async (req, res) => {
 
   await transaction.execute(`delete from Foto where id = ${idFoto} and idCatalogo = ${idCatalogo}`);
 
-  res.status(200).send();
+  return res.status(200).send();
 };
 
 export const putTransferirFotos = async (req, res) => {
@@ -145,5 +145,5 @@ export const putTransferirFotos = async (req, res) => {
     `update Foto set idCatalogo = ${idCatalogoDestino} where idCatalogo = ${idCatalogoOrigem}`,
   );
 
-  res.status(200).send();
+  return res.status(200).send();
 };
