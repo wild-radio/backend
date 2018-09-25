@@ -13,6 +13,7 @@ log.info(`Inicializando servidor...`);
 
 const server = express();
 
+server.use(db.transactionManager);
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(log.middleware);
