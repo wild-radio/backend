@@ -293,6 +293,9 @@ export default {
             description: 'Inserção bem sucedida',
             schema: { $ref: '#/definitions/CatalogoApi' },
           },
+          400: {
+            description: 'Campos obrigatórios devem ser preenchidos',
+          },
           500: {
             description: 'Erro interno',
           },
@@ -327,6 +330,9 @@ export default {
           200: {
             description: 'Edição bem sucedida',
             schema: { $ref: '#/definitions/CatalogoApi' },
+          },
+          400: {
+            description: 'Campos obrigatórios devem ser preenchidos',
           },
           404: {
             description: 'Catálogo não encontrado',
