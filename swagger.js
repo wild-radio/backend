@@ -83,6 +83,9 @@ export default {
             description: 'Atualização bem sucedida',
             schema: { $ref: '#/definitions/ConfiguracaoApi' },
           },
+          400: {
+            description: 'Campos obrigatórios devem ser preenchidos',
+          },
           404: {
             description: 'Câmera não encontrada',
           },
@@ -106,10 +109,20 @@ export default {
             type: 'integer',
             format: 'int64',
           },
+          {
+            name: 'body',
+            in: 'body',
+            description: 'Configurações',
+            required: true,
+            schema: { $ref: '#/definitions/ConfiguracaoApi' },
+          },
         ],
         responses: {
           200: {
             description: 'Solicitação bem sucedida',
+          },
+          400: {
+            description: 'Campos obrigatórios devem ser preenchidos',
           },
           404: {
             description: 'Câmera não encontrada',
@@ -210,6 +223,9 @@ export default {
         responses: {
           200: {
             description: 'Envio bem sucedido',
+          },
+          400: {
+            description: 'Campos obrigatórios devem ser informados',
           },
           404: {
             description: 'Câmera não encontrada',

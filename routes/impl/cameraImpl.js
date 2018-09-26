@@ -1,54 +1,191 @@
-export const getConfiguracao = (req, res) => {
+import log from '../../utils/log';
+import file from '../../utils/file';
+import PATHS from '../../constants/paths';
+import { transaction } from '../../database/db';
+
+export const getConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
 
-  // TODO: implementação
-  res.status(200).send(`GET configuração camera ${idCamera}`);
+  const camera = await transaction.getSingleColumn(
+    `select count(*) from Camera where id = ${idCamera}`,
+  );
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  const configuracao = await transaction.getFirstResult(
+    `select * from Configuracao where idCamera = ${idCamera}`,
+  );
+
+  return res.status(200).send(configuracao);
 };
 
-export const putConfiguracao = (req, res) => {
+export const putConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
   const { body } = req;
+  const { ativa, temporizador, presenca, horizontal, vertical } = body;
 
-  // TODO: implementação
-  // (Atualizar o arquivo de configuração)
-  res.status(200).send({ idCamera, ...body });
+  const preenchidoBooleano = configuracao => configuracao === 0 || configuracao === 1;
+  const preenchidoNumerico = configuracao => configuracao || configuracao === 0;
+
+  if (
+    !preenchidoBooleano(ativa) ||
+    !preenchidoBooleano(temporizador) ||
+    !preenchidoBooleano(presenca) ||
+    !preenchidoNumerico(horizontal) ||
+    !preenchidoNumerico(vertical)
+  ) {
+    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
+  }
+
+  const camera = await transaction.getFirstResult(`select * from Camera where id = ${idCamera}`);
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  const configuracao = await transaction.getFirstResult(
+    `select * from Configuracao where idCamera = ${idCamera}`,
+  );
+
+  await transaction.execute(
+    `update Configuracao set
+    ativa=${ativa},
+    temporizador=${temporizador},
+    presenca=${presenca},
+    horizontal=${horizontal},
+    vertical=${vertical}
+    where idCamera = ${idCamera}`,
+  );
+
+  file.atualizar(
+    `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}`,
+  );
+  log.info(`Arquivo de configuração da câmera ${idCamera} atualizado`);
+
+  res.status(200).send({ ...configuracao, ativa, temporizador, presenca, horizontal, vertical });
 };
 
-export const postConfirmacaoConfiguracao = (req, res) => {
+export const postConfirmacaoConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
+  const { body } = req;
+  const { ativa, temporizador, presenca, horizontal, vertical } = body;
 
-  // TODO: implementação
-  // (Atualizar o arquivo de configuração, mas não o banco)
-  // (Abrir um websocket e esperar a chegada da foto)
+  const preenchidoBooleano = configuracao => configuracao === 0 || configuracao === 1;
+  const preenchidoNumerico = configuracao => configuracao || configuracao === 0;
+
+  if (
+    !preenchidoBooleano(ativa) ||
+    !preenchidoBooleano(temporizador) ||
+    !preenchidoBooleano(presenca) ||
+    !preenchidoNumerico(horizontal) ||
+    !preenchidoNumerico(vertical)
+  ) {
+    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
+  }
+
+  const camera = await transaction.getSingleColumn(
+    `select count(*) from Camera where id = ${idCamera}`,
+  );
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  file.atualizar(
+    `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}`,
+  );
+  log.info(`Arquivo de configuração da câmera ${idCamera} atualizado para confirmação`);
+
+  // TODO: abrir um websocket e esperar a chegada da foto correspondente
   res.status(200).send(`Websocket ${idCamera}`);
 };
 
 export const postFotoConfirmacaoConfiguracao = (req, res) => {
   const { idCamera } = req.params;
 
-  // TODO: implementação
-  // (Enviar foto recebida pelo websocket)
+  // TODO: enviar foto recebida pelo websocket correspondente
   res.status(200).send(`Websocket ${idCamera}`);
 };
 
-export const getFotos = (req, res) => {
+export const getFotos = async (req, res) => {
   const { idCamera } = req.params;
 
-  // TODO: implementação
-  res.status(200).send(`GET fotos camera ${idCamera}`);
+  const camera = await transaction.getSingleColumn(
+    `select count(*) from Camera where id = ${idCamera}`,
+  );
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  const fotos = await transaction.getResultList(
+    `select * from Foto where idCamera = ${idCamera} and idCatalogo is null`,
+  );
+
+  return res.status(200).send(fotos);
 };
 
-export const postFotos = (req, res) => {
+export const postFotos = async (req, res) => {
   const { idCamera } = req.params;
   const { body } = req;
+  const { dataHoraCaptura, conteudo } = body;
 
-  // TODO: implementação
-  res.status(200).send({ idCamera, ...body });
+  if (!dataHoraCaptura || !conteudo) {
+    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
+  }
+
+  const camera = await transaction.getSingleColumn(
+    `select count(*) from Camera where id = ${idCamera}`,
+  );
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  await transaction.execute(
+    `insert into Foto
+    (idCamera, idCatalogo, dataHoraCaptura, conteudo)
+    values (${idCamera}, null, ${dataHoraCaptura}, '${conteudo}')`,
+  );
+
+  res.status(200).send();
 };
 
-export const deleteFotos = (req, res) => {
+export const deleteFotos = async (req, res) => {
   const { idCamera, idFoto } = req.params;
 
-  // TODO: implementação
-  res.status(200).send(`DELETE foto ${idFoto} da câmera ${idCamera}`);
+  const camera = await transaction.getSingleColumn(
+    `select count(*) from Camera where id = ${idCamera}`,
+  );
+
+  if (!camera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  const foto = await transaction.getFirstResult(
+    `select * from Foto
+    where id = ${idFoto}
+    and idCamera = ${idCamera}`,
+  );
+
+  if (!foto) {
+    return res.status(404).send('Foto não encontrada');
+  }
+
+  if (foto.idCatalogo) {
+    return res.status(400).send('A foto informada já está catalogada');
+  }
+
+  await transaction.execute(`
+    delete from Foto
+    where id = ${idFoto}
+    and idCamera = ${idCamera}
+    and idCatalogo is null
+  `);
+
+  return res.status(200).send();
 };
