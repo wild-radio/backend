@@ -78,8 +78,10 @@ class Transaction {
       this.connection.get(query, (err, row) => {
         if (err) {
           reject(new Error(`Erro na consulta ao banco de dados. ${err}`));
-        } else {
+        } else if (typeof row === 'object') {
           resolve(Object.values(row)[0]);
+        } else {
+          resolve();
         }
       });
     });
