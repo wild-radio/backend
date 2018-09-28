@@ -133,42 +133,6 @@ export default {
         },
       },
     },
-    '/cameras/{idCamera}/configuracao/confirmacao/foto': {
-      post: {
-        tags: ['cameras'],
-        summary: 'Envia a foto de confirmação do ajuste do ângulo',
-        operationId: 'fotoConfirmacaoConfiguracao',
-        consumes: ['application/json'],
-        parameters: [
-          {
-            name: 'idCamera',
-            in: 'path',
-            description: 'ID da câmera',
-            required: true,
-            type: 'integer',
-            format: 'int64',
-          },
-          {
-            name: 'body',
-            in: 'body',
-            description: 'Foto',
-            required: true,
-            schema: { $ref: '#/definitions/FotoApi' },
-          },
-        ],
-        responses: {
-          200: {
-            description: 'Envio bem sucedido',
-          },
-          404: {
-            description: 'Câmera não encontrada',
-          },
-          500: {
-            description: 'Erro interno',
-          },
-        },
-      },
-    },
     '/cameras/{idCamera}/fotos': {
       get: {
         tags: ['cameras'],
@@ -189,43 +153,6 @@ export default {
           200: {
             description: 'Consulta bem sucedida',
             schema: { type: 'array', items: { $ref: '#/definitions/FotoApi' } },
-          },
-          404: {
-            description: 'Câmera não encontrada',
-          },
-          500: {
-            description: 'Erro interno',
-          },
-        },
-      },
-      post: {
-        tags: ['cameras'],
-        summary: 'Insere uma novo foto para uma câmera',
-        operationId: 'insereFotoCamera',
-        consumes: ['application/json'],
-        parameters: [
-          {
-            name: 'idCamera',
-            in: 'path',
-            description: 'ID da câmera',
-            required: true,
-            type: 'integer',
-            format: 'int64',
-          },
-          {
-            name: 'body',
-            in: 'body',
-            description: 'Foto',
-            required: true,
-            schema: { $ref: '#/definitions/FotoApi' },
-          },
-        ],
-        responses: {
-          200: {
-            description: 'Envio bem sucedido',
-          },
-          400: {
-            description: 'Campos obrigatórios devem ser informados',
           },
           404: {
             description: 'Câmera não encontrada',
@@ -265,6 +192,96 @@ export default {
           },
           404: {
             description: 'Foto ou camera não encontradas',
+          },
+          500: {
+            description: 'Erro interno',
+          },
+        },
+      },
+    },
+    '/cameras/integracao/{numeroSerial}/{tipoCamera}/fotos': {
+      post: {
+        tags: ['cameras'],
+        summary: 'Insere uma novo foto para uma câmera',
+        operationId: 'insereFotoCamera',
+        consumes: ['application/json'],
+        parameters: [
+          {
+            name: 'numeroSerial',
+            in: 'path',
+            description: 'O número serial do sistema',
+            required: true,
+            type: 'string',
+          },
+          {
+            name: 'tipoCamera',
+            in: 'path',
+            description: '"principal" ou "alternativa"',
+            required: true,
+            type: 'string',
+          },
+          {
+            name: 'body',
+            in: 'body',
+            description: 'Foto',
+            required: true,
+            schema: { $ref: '#/definitions/FotoIntegracaoApi' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Envio bem sucedido',
+          },
+          400: {
+            description: 'Erro de validação',
+          },
+          404: {
+            description: 'Câmera não encontrada',
+          },
+          500: {
+            description: 'Erro interno',
+          },
+        },
+      },
+    },
+    '/cameras/integracao/{numeroSerial}/{tipoCamera}/configuracao/confirmacao/foto': {
+      post: {
+        tags: ['cameras'],
+        summary: 'Envia a foto de confirmação do ajuste do ângulo',
+        operationId: 'fotoConfirmacaoConfiguracao',
+        consumes: ['application/json'],
+        parameters: [
+          {
+            name: 'numeroSerial',
+            in: 'path',
+            description: 'O número serial do sistema',
+            required: true,
+            type: 'string',
+          },
+          {
+            name: 'tipoCamera',
+            in: 'path',
+            description: '"principal" ou "alternativa"',
+            required: true,
+            type: 'string',
+          },
+          {
+            name: 'body',
+            in: 'body',
+            description: 'Foto',
+            required: true,
+            schema: { $ref: '#/definitions/FotoIntegracaoApi' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Envio bem sucedido',
+          },
+          400: {
+            description: 'Erro de validação',
+          },
+          404: {
+            description: 'Câmera não encontrada',
           },
           500: {
             description: 'Erro interno',
@@ -616,6 +633,18 @@ export default {
           type: 'integer',
           format: 'int64',
         },
+        dataHoraCaptura: {
+          type: 'integer',
+          format: 'int64',
+        },
+        conteudo: {
+          type: 'string',
+        },
+      },
+    },
+    FotoIntegracaoApi: {
+      type: 'object',
+      properties: {
         dataHoraCaptura: {
           type: 'integer',
           format: 'int64',
