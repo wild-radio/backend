@@ -46,6 +46,10 @@ export const putConfiguracao = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
+  const numeroSerie = await transaction.getSingleColumn(
+    `select numeroSerie from Sistema where id = ${camera.idSistema}`,
+  );
+  const principal = camera.principal === 1 ? 'principal' : 'alternativa';
   const configuracao = await transaction.getFirstResult(
     `select * from Configuracao where idCamera = ${idCamera}`,
   );
@@ -61,7 +65,7 @@ export const putConfiguracao = async (req, res) => {
   );
 
   file.atualizar(
-    `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
+    `${PATHS.BASE_CONFIG_PATH}/${numeroSerie}/${principal}`,
     `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado`);
@@ -88,16 +92,19 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const camera = await transaction.getSingleColumn(
-    `select count(*) from Camera where id = ${idCamera}`,
-  );
+  const camera = await transaction.getFirstResult(`select * from Camera where id = ${idCamera}`);
 
   if (!camera) {
     return res.status(404).send('Câmera não encontrada');
   }
 
+  const numeroSerie = await transaction.getSingleColumn(
+    `select numeroSerie from Sistema where id = ${camera.idSistema}`,
+  );
+  const principal = camera.principal === 1 ? 'principal' : 'alternativa';
+
   file.atualizar(
-    `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
+    `${PATHS.BASE_CONFIG_PATH}/${numeroSerie}/${principal}`,
     `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado para confirmação`);

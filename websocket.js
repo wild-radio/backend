@@ -12,9 +12,6 @@ export const instanciar = () => {
     },
   );
   wss.on('connection', (ws, req) => {
-    wss.clients.forEach(client => {
-      log.info(client);
-    });
     log.info(`Conexão websockets realizada com ${req.connection.remoteAddress}`);
   });
 };
