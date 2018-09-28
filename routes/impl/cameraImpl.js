@@ -104,13 +104,6 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
   res.status(200).send(`Websocket ${idCamera}`);
 };
 
-export const postFotoConfirmacaoConfiguracao = (req, res) => {
-  const { idCamera } = req.params;
-
-  // TODO: enviar foto recebida pelo websocket correspondente
-  res.status(200).send(`Websocket ${idCamera}`);
-};
-
 export const getFotos = async (req, res) => {
   const { idCamera } = req.params;
 
@@ -127,32 +120,6 @@ export const getFotos = async (req, res) => {
   );
 
   return res.status(200).send(fotos);
-};
-
-export const postFotos = async (req, res) => {
-  const { idCamera } = req.params;
-  const { body } = req;
-  const { dataHoraCaptura, conteudo } = body;
-
-  if (!dataHoraCaptura || !conteudo) {
-    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
-  }
-
-  const camera = await transaction.getSingleColumn(
-    `select count(*) from Camera where id = ${idCamera}`,
-  );
-
-  if (!camera) {
-    return res.status(404).send('Câmera não encontrada');
-  }
-
-  await transaction.execute(
-    `insert into Foto
-    (idCamera, idCatalogo, dataHoraCaptura, conteudo)
-    values (${idCamera}, null, ${dataHoraCaptura}, '${conteudo}')`,
-  );
-
-  res.status(200).send();
 };
 
 export const deleteFotos = async (req, res) => {
@@ -188,4 +155,63 @@ export const deleteFotos = async (req, res) => {
   `);
 
   return res.status(200).send();
+};
+
+export const postFotos = async (req, res) => {
+  const { numeroSerial, tipoCamera } = req.params;
+  const { body } = req;
+  const { dataHoraCaptura, conteudo } = body;
+
+  if (!(tipoCamera === 'principal' || tipoCamera === 'alternativa')) {
+    return res.status(400).send("O tipo da câmera deve ser 'principal' ou 'alternativa'");
+  }
+
+  if (!dataHoraCaptura || !conteudo) {
+    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
+  }
+
+  const idCamera = await transaction.getSingleColumn(
+    `select c.id from Sistema s
+    join Camera c on s.id = c.idSistema
+    where s.numeroSerie = '${numeroSerial}' and principal = ${tipoCamera === 'principal' ? 1 : 0}`,
+  );
+
+  if (!idCamera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  await transaction.execute(
+    `insert into Foto
+    (idCamera, idCatalogo, dataHoraCaptura, conteudo)
+    values (${idCamera}, null, ${dataHoraCaptura}, '${conteudo}')`,
+  );
+
+  res.status(200).send();
+};
+
+export const postFotoConfirmacaoConfiguracao = async (req, res) => {
+  const { numeroSerial, tipoCamera } = req.params;
+  const { body } = req;
+  const { dataHoraCaptura, conteudo } = body;
+
+  if (!(tipoCamera === 'principal' || tipoCamera === 'alternativa')) {
+    return res.status(400).send("O tipo da câmera deve ser 'principal' ou 'alternativa'");
+  }
+
+  if (!dataHoraCaptura || !conteudo) {
+    return res.status(400).send('Campos obrigatórios devem ser preenchidos');
+  }
+
+  const idCamera = await transaction.getSingleColumn(
+    `select c.id from Sistema s
+    join Camera c on s.id = c.idSistema
+    where s.numeroSerie = '${numeroSerial}' and principal = ${tipoCamera === 'principal' ? 1 : 0}`,
+  );
+
+  if (!idCamera) {
+    return res.status(404).send('Câmera não encontrada');
+  }
+
+  // TODO: enviar foto recebida pelo websocket correspondente
+  res.status(200).send();
 };

@@ -7,14 +7,14 @@ export default server => {
 
   server.post('/cameras/:idCamera/configuracao/confirmacao', impl.postConfirmacaoConfiguracao);
 
-  server.post(
-    '/cameras/:idCamera/configuracao/confirmacao/foto',
-    impl.postFotoConfirmacaoConfiguracao,
-  );
-
   server.get('/cameras/:idCamera/fotos', impl.getFotos);
 
-  server.post('/cameras/:idCamera/fotos', impl.postFotos);
-
   server.delete('/cameras/:idCamera/fotos/:idFoto', impl.deleteFotos);
+
+  server.post('/cameras/integracao/:numeroSerial/:tipoCamera/fotos', impl.postFotos);
+
+  server.post(
+    '/cameras/integracao/:numeroSerial/:tipoCamera/configuracao/confirmacao/foto',
+    impl.postFotoConfirmacaoConfiguracao,
+  );
 };
