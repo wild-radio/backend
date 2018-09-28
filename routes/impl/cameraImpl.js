@@ -25,6 +25,7 @@ export const putConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
   const { body } = req;
   const { ativa, temporizador, presenca, horizontal, vertical } = body;
+  const fotoConfirmacao = 0;
 
   const preenchidoBooleano = configuracao => configuracao === 0 || configuracao === 1;
   const preenchidoNumerico = configuracao => configuracao || configuracao === 0;
@@ -61,7 +62,7 @@ export const putConfiguracao = async (req, res) => {
 
   file.atualizar(
     `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
-    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado`);
 
@@ -72,6 +73,7 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
   const { body } = req;
   const { ativa, temporizador, presenca, horizontal, vertical } = body;
+  const fotoConfirmacao = 1;
 
   const preenchidoBooleano = configuracao => configuracao === 0 || configuracao === 1;
   const preenchidoNumerico = configuracao => configuracao || configuracao === 0;
@@ -96,7 +98,7 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
 
   file.atualizar(
     `${PATHS.BASE_CONFIG_PATH}/${idCamera}`,
-    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado para confirmação`);
 
