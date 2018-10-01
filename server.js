@@ -18,6 +18,6 @@ routes(server);
 server.listen(NETWORK.PORT, () => {
   log.info(`Servidor inicializado em http://${NETWORK.URL}`);
   log.info(`Documentação disponível em http://${NETWORK.URL}${NETWORK.SWAGGER_UI}`);
-  webSocketServer.instanciar();
+  webSocketServer.initialize();
   db.test();
 });

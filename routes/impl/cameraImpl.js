@@ -1,3 +1,4 @@
+import webSocketServer from '../../websocket';
 import log from '../../utils/log';
 import file from '../../utils/file';
 import PATHS from '../../constants/paths';
@@ -109,8 +110,7 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado para confirmação`);
 
-  // TODO: abrir um websocket e esperar a chegada da foto correspondente
-  res.status(200).send(`Websocket ${idCamera}`);
+  res.status(200).send();
 };
 
 export const getFotos = async (req, res) => {
@@ -221,6 +221,7 @@ export const postFotoConfirmacaoConfiguracao = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  // TODO: enviar foto recebida pelo websocket correspondente
+  webSocketServer.notify(idCamera, conteudo);
+
   res.status(200).send();
 };
