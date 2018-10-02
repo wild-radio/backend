@@ -1,5 +1,5 @@
 {
-  "name": "wildradio-server",
+  "name": "wildradio-backend",
   "version": "1.0.0",
   "description": "Backend do projeto WildRadio",
   "main": "server.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wild-radio/server.git"
+    "url": "git+https://github.com/wild-radio/backend.git"
   },
   "author": "Renato Böhler",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wild-radio/server/issues"
+    "url": "https://github.com/wild-radio/backend/issues"
   },
-  "homepage": "https://github.com/wild-radio/server#readme",
+  "homepage": "https://github.com/wild-radio/backend#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "esm": "^3.0.84",
