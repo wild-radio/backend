@@ -3,7 +3,24 @@ import { transaction } from '../../database/db';
 export const getCatalogos = async (req, res) => {
   const catalogos = await transaction.getResultList('select * from Catalogo');
 
-  return res.status(200).send(catalogos);
+  const catalogosFotos = await Promise.all(
+    catalogos.map(async catalogo => {
+      const quantidadeFotos = await transaction.getSingleColumn(
+        `select count(*) from Foto where idCatalogo = ${catalogo.id}`,
+      );
+
+      let ultimaFoto;
+      if (quantidadeFotos > 0) {
+        ultimaFoto = await transaction.getSingleColumn(
+          `select conteudo from Foto where idCatalogo = ${catalogo.id} order by id desc`,
+        );
+      }
+
+      return { ...catalogo, quantidadeFotos, ultimaFoto };
+    }),
+  );
+
+  return res.status(200).send(catalogosFotos);
 };
 
 export const postCatalogos = async (req, res) => {

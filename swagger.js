@@ -299,7 +299,7 @@ export default {
         responses: {
           200: {
             description: 'Consulta bem sucedida',
-            schema: { type: 'array', items: { $ref: '#/definitions/CatalogoApi' } },
+            schema: { type: 'array', items: { $ref: '#/definitions/CatalogoListaApi' } },
           },
           500: {
             description: 'Erro interno',
@@ -663,6 +663,25 @@ export default {
         },
         nome: {
           type: 'string',
+        },
+      },
+    },
+    CatalogoListaApi: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'integer',
+          format: 'int64',
+        },
+        nome: {
+          type: 'string',
+        },
+        foto: {
+          type: 'string',
+        },
+        quantidadeFotos: {
+          type: 'integer',
+          format: 'int64',
         },
       },
     },
