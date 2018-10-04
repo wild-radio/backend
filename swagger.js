@@ -719,6 +719,9 @@ export default {
           type: 'integer',
           format: 'int64',
         },
+        ativa: {
+          type: 'boolean',
+        },
         fotosNovas: {
           type: 'integer',
           format: 'int64',

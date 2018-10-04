@@ -5,9 +5,22 @@ export const getSistemas = async (req, res) => {
 
   const sistemasCameras = await Promise.all(
     sistemas.map(async sistema => {
-      const cameras = await transaction.getResultList(
+      let cameras = await transaction.getResultList(
         `select * from Camera where idSistema = ${sistema.id}`,
       );
+
+      cameras = await Promise.all(
+        cameras.map(async camera => {
+          const fotosNovas = await transaction.getSingleColumn(
+            `select count(*) from Foto where idCamera = ${camera.id} and idCatalogo is null`,
+          );
+          const ativa = await transaction.getSingleColumn(
+            `select ativa from Configuracao where idCamera = ${camera.id}`,
+          );
+          return { ...camera, fotosNovas, ativa: !!ativa };
+        }),
+      );
+
       return { ...sistema, cameras };
     }),
   );
