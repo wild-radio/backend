@@ -1,17 +1,15 @@
-import { transaction } from '../../database/db';
-
 export const getCatalogos = async (req, res) => {
-  const catalogos = await transaction.getResultList('select * from Catalogo');
+  const catalogos = await req.transaction.getResultList('select * from Catalogo');
 
   const catalogosFotos = await Promise.all(
     catalogos.map(async catalogo => {
-      const quantidadeFotos = await transaction.getSingleColumn(
+      const quantidadeFotos = await req.transaction.getSingleColumn(
         `select count(*) from Foto where idCatalogo = ${catalogo.id}`,
       );
 
       let ultimaFoto;
       if (quantidadeFotos > 0) {
-        ultimaFoto = await transaction.getSingleColumn(
+        ultimaFoto = await req.transaction.getSingleColumn(
           `select conteudo from Foto where idCatalogo = ${catalogo.id} order by id desc`,
         );
       }
@@ -31,8 +29,10 @@ export const postCatalogos = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  await transaction.execute(`insert into Catalogo (nome) values ('${nome}')`);
-  const cadastrado = await transaction.getFirstResult('select * from Catalogo order by id desc');
+  await req.transaction.execute(`insert into Catalogo (nome) values ('${nome}')`);
+  const cadastrado = await req.transaction.getFirstResult(
+    'select * from Catalogo order by id desc',
+  );
 
   return res.status(200).send(cadastrado);
 };
@@ -46,7 +46,7 @@ export const putCatalogos = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const catalogo = await transaction.getFirstResult(
+  const catalogo = await req.transaction.getFirstResult(
     `select * from Catalogo where id = ${idCatalogo}`,
   );
 
@@ -54,7 +54,7 @@ export const putCatalogos = async (req, res) => {
     return res.status(404).send('Catálogo não encontrado');
   }
 
-  await transaction.execute(`update Catalogo set nome = '${nome}' where id = ${idCatalogo}`);
+  await req.transaction.execute(`update Catalogo set nome = '${nome}' where id = ${idCatalogo}`);
 
   return res.status(200).send({ ...catalogo, nome });
 };
@@ -62,7 +62,7 @@ export const putCatalogos = async (req, res) => {
 export const deleteCatalogos = async (req, res) => {
   const { idCatalogo } = req.params;
 
-  const catalogo = await transaction.getSingleColumn(
+  const catalogo = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogo}`,
   );
 
@@ -70,7 +70,7 @@ export const deleteCatalogos = async (req, res) => {
     return res.status(404).send('Catálogo não encontrado');
   }
 
-  await transaction.execute(`delete from Catalogo where id = ${idCatalogo}`);
+  await req.transaction.execute(`delete from Catalogo where id = ${idCatalogo}`);
 
   return res.status(200).send();
 };
@@ -78,7 +78,7 @@ export const deleteCatalogos = async (req, res) => {
 export const getFotos = async (req, res) => {
   const { idCatalogo } = req.params;
 
-  const catalogo = await transaction.getSingleColumn(
+  const catalogo = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogo}`,
   );
 
@@ -86,7 +86,7 @@ export const getFotos = async (req, res) => {
     return res.status(404).send('Catálogo não encontrado');
   }
 
-  const fotos = await transaction.getResultList(
+  const fotos = await req.transaction.getResultList(
     `select * from Foto where idCatalogo = ${idCatalogo}`,
   );
 
@@ -96,7 +96,7 @@ export const getFotos = async (req, res) => {
 export const putFotos = async (req, res) => {
   const { idCatalogo, idFoto } = req.params;
 
-  const catalogo = await transaction.getSingleColumn(
+  const catalogo = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogo}`,
   );
 
@@ -104,13 +104,15 @@ export const putFotos = async (req, res) => {
     return res.status(404).send('Catálogo não encontrado');
   }
 
-  const foto = await transaction.getSingleColumn(`select count(*) from Foto where id = ${idFoto}`);
+  const foto = await req.transaction.getSingleColumn(
+    `select count(*) from Foto where id = ${idFoto}`,
+  );
 
   if (!foto) {
     return res.status(404).send('Foto não encontrada');
   }
 
-  await transaction.execute(`update Foto set idCatalogo = ${idCatalogo} where id = ${idFoto}`);
+  await req.transaction.execute(`update Foto set idCatalogo = ${idCatalogo} where id = ${idFoto}`);
 
   return res.status(200).send();
 };
@@ -118,7 +120,7 @@ export const putFotos = async (req, res) => {
 export const deleteFotos = async (req, res) => {
   const { idCatalogo, idFoto } = req.params;
 
-  const catalogo = await transaction.getSingleColumn(
+  const catalogo = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogo}`,
   );
 
@@ -126,7 +128,7 @@ export const deleteFotos = async (req, res) => {
     return res.status(404).send('Catálogo não encontrado');
   }
 
-  const foto = await transaction.getSingleColumn(
+  const foto = await req.transaction.getSingleColumn(
     `select count(*) from Foto where id = ${idFoto} and idCatalogo = ${idCatalogo}`,
   );
 
@@ -134,7 +136,9 @@ export const deleteFotos = async (req, res) => {
     return res.status(404).send('Foto não encontrada neste catálogo');
   }
 
-  await transaction.execute(`delete from Foto where id = ${idFoto} and idCatalogo = ${idCatalogo}`);
+  await req.transaction.execute(
+    `delete from Foto where id = ${idFoto} and idCatalogo = ${idCatalogo}`,
+  );
 
   return res.status(200).send();
 };
@@ -142,7 +146,7 @@ export const deleteFotos = async (req, res) => {
 export const putTransferirFotos = async (req, res) => {
   const { idCatalogoOrigem, idCatalogoDestino } = req.params;
 
-  const catalogoOrigem = await transaction.getSingleColumn(
+  const catalogoOrigem = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogoOrigem}`,
   );
 
@@ -150,7 +154,7 @@ export const putTransferirFotos = async (req, res) => {
     return res.status(404).send('Catálogo de origem não encontrado');
   }
 
-  const catalogoDestino = await transaction.getSingleColumn(
+  const catalogoDestino = await req.transaction.getSingleColumn(
     `select count(*) from Catalogo where id = ${idCatalogoDestino}`,
   );
 
@@ -158,7 +162,7 @@ export const putTransferirFotos = async (req, res) => {
     return res.status(404).send('Catálogo de destino não encontrado');
   }
 
-  await transaction.execute(
+  await req.transaction.execute(
     `update Foto set idCatalogo = ${idCatalogoDestino} where idCatalogo = ${idCatalogoOrigem}`,
   );
 

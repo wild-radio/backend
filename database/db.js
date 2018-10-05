@@ -127,8 +127,6 @@ class Transaction {
   }
 }
 
-export const transaction = new Transaction();
-
 export const test = async () =>
   new sqlite3.Database('./database/db.sqlite3', err => {
     if (err) {
@@ -139,6 +137,9 @@ export const test = async () =>
   });
 
 export const transactionManager = (req, res, next) => {
+  const transaction = new Transaction();
+  req.transaction = transaction;
+
   const originalSend = res.send;
 
   transaction.open();
@@ -159,7 +160,6 @@ export const transactionManager = (req, res, next) => {
 };
 
 export default {
-  transaction,
   test,
   transactionManager,
 };

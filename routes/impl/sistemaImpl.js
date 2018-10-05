@@ -1,20 +1,18 @@
-import { transaction } from '../../database/db';
-
 export const getSistemas = async (req, res) => {
-  const sistemas = await transaction.getResultList('select * from Sistema');
+  const sistemas = await req.transaction.getResultList('select * from Sistema');
 
   const sistemasCameras = await Promise.all(
     sistemas.map(async sistema => {
-      let cameras = await transaction.getResultList(
+      let cameras = await req.transaction.getResultList(
         `select * from Camera where idSistema = ${sistema.id}`,
       );
 
       cameras = await Promise.all(
         cameras.map(async camera => {
-          const fotosNovas = await transaction.getSingleColumn(
+          const fotosNovas = await req.transaction.getSingleColumn(
             `select count(*) from Foto where idCamera = ${camera.id} and idCatalogo is null`,
           );
-          const ativa = await transaction.getSingleColumn(
+          const ativa = await req.transaction.getSingleColumn(
             `select ativa from Configuracao where idCamera = ${camera.id}`,
           );
           return { ...camera, fotosNovas, ativa: !!ativa };
@@ -36,7 +34,7 @@ export const postSistemas = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const numeroSerieUtilizado = await transaction.getSingleColumn(
+  const numeroSerieUtilizado = await req.transaction.getSingleColumn(
     `select count(*) from Sistema where numeroSerie = '${numeroSerie}'`,
   );
 
@@ -44,49 +42,49 @@ export const postSistemas = async (req, res) => {
     return res.status(400).send(`O sistema com número de série ${numeroSerie} já foi cadastrado`);
   }
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Sistema (identificacao, numeroSerie)
     values ('${identificacao}', '${numeroSerie}')`,
   );
 
-  const sistemaCadastrado = await transaction.getFirstResult(
+  const sistemaCadastrado = await req.transaction.getFirstResult(
     'select * from Sistema order by id desc',
   );
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Camera (idSistema, principal)
     values (${sistemaCadastrado.id}, 1)`,
   );
 
-  const idCameraPrincipal = await transaction.getSingleColumn(
+  const idCameraPrincipal = await req.transaction.getSingleColumn(
     'select id from Camera order by id desc',
   );
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Configuracao
     (idCamera, ativa, temporizador, presenca, horizontal, vertical)
     values (${idCameraPrincipal}, 0, 0, 0, 0, 0);
     `,
   );
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Camera
     (idSistema, principal)
     values (${sistemaCadastrado.id}, 0)`,
   );
 
-  const idCameraAlternativa = await transaction.getSingleColumn(
+  const idCameraAlternativa = await req.transaction.getSingleColumn(
     'select id from Camera order by id desc',
   );
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Configuracao
     (idCamera, ativa, temporizador, presenca, horizontal, vertical)
     values (${idCameraAlternativa}, 0, 0, 0, 0, 0);
     `,
   );
 
-  const camerasCadastradas = await transaction.getResultList(
+  const camerasCadastradas = await req.transaction.getResultList(
     `select * from Camera where idSistema = ${sistemaCadastrado.id}`,
   );
 

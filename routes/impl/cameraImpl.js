@@ -2,12 +2,11 @@ import webSocketServer from '../../websocket';
 import log from '../../utils/log';
 import file from '../../utils/file';
 import PATHS from '../../constants/paths';
-import { transaction } from '../../database/db';
 
 export const getConfiguracao = async (req, res) => {
   const { idCamera } = req.params;
 
-  const camera = await transaction.getSingleColumn(
+  const camera = await req.transaction.getSingleColumn(
     `select count(*) from Camera where id = ${idCamera}`,
   );
 
@@ -15,7 +14,7 @@ export const getConfiguracao = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  const configuracao = await transaction.getFirstResult(
+  const configuracao = await req.transaction.getFirstResult(
     `select * from Configuracao where idCamera = ${idCamera}`,
   );
 
@@ -41,21 +40,23 @@ export const putConfiguracao = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const camera = await transaction.getFirstResult(`select * from Camera where id = ${idCamera}`);
+  const camera = await req.transaction.getFirstResult(
+    `select * from Camera where id = ${idCamera}`,
+  );
 
   if (!camera) {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  const numeroSerie = await transaction.getSingleColumn(
+  const numeroSerie = await req.transaction.getSingleColumn(
     `select numeroSerie from Sistema where id = ${camera.idSistema}`,
   );
   const principal = camera.principal === 1 ? 'principal' : 'alternativa';
-  const configuracao = await transaction.getFirstResult(
+  const configuracao = await req.transaction.getFirstResult(
     `select * from Configuracao where idCamera = ${idCamera}`,
   );
 
-  await transaction.execute(
+  await req.transaction.execute(
     `update Configuracao set
     ativa=${ativa},
     temporizador=${temporizador},
@@ -93,13 +94,15 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const camera = await transaction.getFirstResult(`select * from Camera where id = ${idCamera}`);
+  const camera = await req.transaction.getFirstResult(
+    `select * from Camera where id = ${idCamera}`,
+  );
 
   if (!camera) {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  const numeroSerie = await transaction.getSingleColumn(
+  const numeroSerie = await req.transaction.getSingleColumn(
     `select numeroSerie from Sistema where id = ${camera.idSistema}`,
   );
   const principal = camera.principal === 1 ? 'principal' : 'alternativa';
@@ -116,7 +119,7 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
 export const getFotos = async (req, res) => {
   const { idCamera } = req.params;
 
-  const camera = await transaction.getSingleColumn(
+  const camera = await req.transaction.getSingleColumn(
     `select count(*) from Camera where id = ${idCamera}`,
   );
 
@@ -124,7 +127,7 @@ export const getFotos = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  const fotos = await transaction.getResultList(
+  const fotos = await req.transaction.getResultList(
     `select * from Foto where idCamera = ${idCamera} and idCatalogo is null`,
   );
 
@@ -134,7 +137,7 @@ export const getFotos = async (req, res) => {
 export const deleteFotos = async (req, res) => {
   const { idCamera, idFoto } = req.params;
 
-  const camera = await transaction.getSingleColumn(
+  const camera = await req.transaction.getSingleColumn(
     `select count(*) from Camera where id = ${idCamera}`,
   );
 
@@ -142,7 +145,7 @@ export const deleteFotos = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  const foto = await transaction.getFirstResult(
+  const foto = await req.transaction.getFirstResult(
     `select * from Foto
     where id = ${idFoto}
     and idCamera = ${idCamera}`,
@@ -156,7 +159,7 @@ export const deleteFotos = async (req, res) => {
     return res.status(400).send('A foto informada já está catalogada');
   }
 
-  await transaction.execute(`
+  await req.transaction.execute(`
     delete from Foto
     where id = ${idFoto}
     and idCamera = ${idCamera}
@@ -179,7 +182,7 @@ export const postFotos = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const idCamera = await transaction.getSingleColumn(
+  const idCamera = await req.transaction.getSingleColumn(
     `select c.id from Sistema s
     join Camera c on s.id = c.idSistema
     where s.numeroSerie = '${numeroSerial}' and principal = ${tipoCamera === 'principal' ? 1 : 0}`,
@@ -189,7 +192,7 @@ export const postFotos = async (req, res) => {
     return res.status(404).send('Câmera não encontrada');
   }
 
-  await transaction.execute(
+  await req.transaction.execute(
     `insert into Foto
     (idCamera, idCatalogo, dataHoraCaptura, conteudo)
     values (${idCamera}, null, ${dataHoraCaptura}, '${conteudo}')`,
@@ -211,7 +214,7 @@ export const postFotoConfirmacaoConfiguracao = async (req, res) => {
     return res.status(400).send('Campos obrigatórios devem ser preenchidos');
   }
 
-  const idCamera = await transaction.getSingleColumn(
+  const idCamera = await req.transaction.getSingleColumn(
     `select c.id from Sistema s
     join Camera c on s.id = c.idSistema
     where s.numeroSerie = '${numeroSerial}' and principal = ${tipoCamera === 'principal' ? 1 : 0}`,
