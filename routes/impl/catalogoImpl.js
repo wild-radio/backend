@@ -87,7 +87,7 @@ export const getFotos = async (req, res) => {
   }
 
   const fotos = await req.transaction.getResultList(
-    `select * from Foto where idCatalogo = ${idCatalogo}`,
+    `select * from Foto where idCatalogo = ${idCatalogo} order by dataHoraCaptura desc`,
   );
 
   return res.status(200).send(fotos);
