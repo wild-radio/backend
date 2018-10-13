@@ -42,11 +42,10 @@ export const initialize = () => {
 
 export const notify = (idCamera, conteudo) =>
   clients.forEach((client, index) => {
-    if (client.config.idCamera !== idCamera) {
+    if (client.config.idCamera !== idCamera || client.ws.readyState !== 1) {
       return;
     }
 
-    console.log(client.ws.readyState);
     client.ws.send(conteudo);
     clients.splice(index, 1);
   });
