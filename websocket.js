@@ -33,6 +33,10 @@ export const initialize = () => {
         })`,
       );
     });
+
+    ws.on('close', () =>
+      log.info(`Conexão websockets com ${req.connection.remoteAddress} foi encerrada`),
+    );
   });
 };
 
@@ -42,9 +46,9 @@ export const notify = (idCamera, conteudo) =>
       return;
     }
 
+    console.log(client.ws.readyState);
     client.ws.send(conteudo);
     clients.splice(index, 1);
-    client.ws.close();
   });
 
 export default { initialize, notify };
