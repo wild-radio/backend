@@ -16,6 +16,11 @@ export default server => {
   server.delete('/catalogos/:idCatalogo/fotos/:idFoto', impl.deleteFotos);
 
   server.put(
+    '/catalogos/:idCatalogoOrigem/fotos/:idFoto/transferir-para/:idCatalogoDestino',
+    impl.putTransferirFoto,
+  );
+
+  server.put(
     '/catalogos/:idCatalogoOrigem/fotos/transferir-para/:idCatalogoDestino',
     impl.putTransferirFotos,
   );

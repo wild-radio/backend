@@ -143,6 +143,42 @@ export const deleteFotos = async (req, res) => {
   return res.status(200).send();
 };
 
+export const putTransferirFoto = async (req, res) => {
+  const { idCatalogoOrigem, idCatalogoDestino, idFoto } = req.params;
+
+  const catalogoOrigem = await req.transaction.getSingleColumn(
+    `select count(*) from Catalogo where id = ${idCatalogoOrigem}`,
+  );
+
+  if (!catalogoOrigem) {
+    return res.status(404).send('Catálogo de origem não encontrado');
+  }
+
+  const catalogoDestino = await req.transaction.getSingleColumn(
+    `select count(*) from Catalogo where id = ${idCatalogoDestino}`,
+  );
+
+  if (!catalogoDestino) {
+    return res.status(404).send('Catálogo de destino não encontrado');
+  }
+
+  const foto = await req.transaction.getSingleColumn(
+    `select count(*) from Foto where id = ${idFoto} and idCatalogo = ${idCatalogoOrigem}`,
+  );
+
+  if (!foto) {
+    return res.status(404).send('Foto não encontrada no catálogo de origem');
+  }
+
+  await req.transaction.execute(
+    `update Foto
+     set idCatalogo = ${idCatalogoDestino}
+     where id = ${idFoto} and idCatalogo = ${idCatalogoOrigem}`,
+  );
+
+  return res.status(200).send();
+};
+
 export const putTransferirFotos = async (req, res) => {
   const { idCatalogoOrigem, idCatalogoDestino } = req.params;
 

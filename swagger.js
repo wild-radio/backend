@@ -504,6 +504,51 @@ export default {
         },
       },
     },
+    '/catalogos/{idCatalogoOrigem}/fotos/{idFoto}/transferir-para/{idCatalogoDestino}': {
+      put: {
+        tags: ['catalogos'],
+        summary: 'Transfere uma foto de um catálogo para outro',
+        operationId: 'transfereFotoCatalogo',
+        consumes: ['application/json'],
+        parameters: [
+          {
+            name: 'idFoto',
+            in: 'path',
+            description: 'ID da foto',
+            required: true,
+            type: 'integer',
+            format: 'int64',
+          },
+          {
+            name: 'idCatalogoOrigem',
+            in: 'path',
+            description: 'ID do catálogo de origem',
+            required: true,
+            type: 'integer',
+            format: 'int64',
+          },
+          {
+            name: 'idCatalogoDestino',
+            in: 'path',
+            description: 'ID do catálogo de destino',
+            required: true,
+            type: 'integer',
+            format: 'int64',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Transferência bem sucedida',
+          },
+          404: {
+            description: 'Foto, catálogo de origem e/ou destino não encontrados',
+          },
+          500: {
+            description: 'Erro interno',
+          },
+        },
+      },
+    },
     '/catalogos/{idCatalogoOrigem}/fotos/transferir-para/{idCatalogoDestino}': {
       put: {
         tags: ['catalogos'],
