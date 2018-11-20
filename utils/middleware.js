@@ -23,8 +23,8 @@ export default server => {
     });
 
   server.use(db.transactionManager);
-  server.use(bodyParser.json());
-  server.use(bodyParser.urlencoded({ extended: true }));
+  server.use(bodyParser.json({ limit: '50mb' }));
+  server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   server.use(log.middleware);
   server.use(cors.middleware);
   server.use(SWAGGER_UI, swaggerUi.serve, swaggerUi.setup(documentation));
