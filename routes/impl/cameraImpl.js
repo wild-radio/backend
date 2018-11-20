@@ -68,7 +68,7 @@ export const putConfiguracao = async (req, res) => {
 
   file.atualizar(
     `${PATHS.BASE_CONFIG_PATH}/${numeroSerie}/${principal}`,
-    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}\n`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado`);
 
@@ -109,7 +109,7 @@ export const postConfirmacaoConfiguracao = async (req, res) => {
 
   file.atualizar(
     `${PATHS.BASE_CONFIG_PATH}/${numeroSerie}/${principal}`,
-    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}`,
+    `${ativa}\n${temporizador}\n${presenca}\n${horizontal}\n${vertical}\n${fotoConfirmacao}\n`,
   );
   log.info(`Arquivo de configuração da câmera ${idCamera} atualizado para confirmação`);
 
